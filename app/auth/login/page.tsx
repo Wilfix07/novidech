@@ -7,7 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 export default function LoginPage() {
-  const [identifier, setIdentifier] = useState(''); // Can be email or member_id
+  const [memberId, setMemberId] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,44 +19,37 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // Check if identifier is a member_id (numeric without @) or email
-      const isMemberId = /^\d+$/.test(identifier.replace(/-/g, ''));
+      // Remove any hyphens from the member ID
+      const cleanMemberId = memberId.replace(/-/g, '').trim();
       
-      let loginEmail = identifier;
-      
-      if (isMemberId) {
-        // It's a member_id, check if member exists and get email
-        const { data: memberData, error: memberError } = await supabase
-          .rpc('member_can_login', { member_id_input: identifier.replace(/-/g, '') });
-        
-        if (memberError || !memberData || memberData.length === 0) {
-          throw new Error('Numéro de membre non trouvé');
-        }
-        
-        const member = memberData[0];
-        loginEmail = member.email;
-        
-        // If password is not set, redirect to first login page
-        if (!member.can_login) {
-          router.push(`/auth/first-login?member_id=${encodeURIComponent(identifier.replace(/-/g, ''))}`);
-          return;
-        }
+      // Validate that it's numeric
+      if (!/^\d+$/.test(cleanMemberId)) {
+        throw new Error('L\'ID doit être un numéro valide (ex: 250000001)');
       }
-      
-      // Try to login with email and password
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: loginEmail,
+
+      // Sign in using phone field with the numeric ID
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        phone: cleanMemberId,
         password,
       });
 
-      if (error) throw error;
+      if (signInError) {
+        // Check if user doesn't exist or password is wrong
+        if (signInError.message?.includes('Invalid login credentials') || 
+            signInError.message?.includes('Invalid password') ||
+            signInError.message?.includes('User not found')) {
+          throw new Error('ID ou mot de passe incorrect');
+        }
+        throw signInError;
+      }
 
       if (data.user) {
         router.push('/dashboard');
         router.refresh();
       }
-    } catch (err: any) {
-      setError(err.message || 'Une erreur est survenue lors de la connexion');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Une erreur est survenue lors de la connexion';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -85,20 +78,22 @@ export default function LoginPage() {
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label htmlFor="identifier" className="block text-sm font-medium text-text mb-2">
-              Email ou Numéro de membre
+            <label htmlFor="memberId" className="block text-sm font-medium text-text mb-2">
+              ID
             </label>
             <input
-              id="identifier"
+              id="memberId"
               type="text"
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
+              value={memberId}
+              onChange={(e) => setMemberId(e.target.value)}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              placeholder="votre@email.com ou 250000101"
+              placeholder="250000001"
+              pattern="[0-9-]+"
+              inputMode="numeric"
             />
             <p className="mt-1 text-sm text-gray-500">
-              Utilisez votre email ou votre numéro de membre (sans les tirets)
+              Entrez votre numéro d&apos;identification (ex: 250000001)
             </p>
           </div>
 
@@ -138,6 +133,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-
-

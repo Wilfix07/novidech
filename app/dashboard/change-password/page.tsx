@@ -72,9 +72,9 @@ export default function ChangePasswordPage() {
 
       // If not default password, verify current password first
       if (!isDefaultPassword && currentPassword) {
-        const memberEmail = `m${member?.member_id?.replace(/-/g, '')}@example.com`;
+        const memberIdClean = member?.member_id?.replace(/-/g, '').trim();
         const { error: signInError } = await supabase.auth.signInWithPassword({
-          email: memberEmail,
+          phone: memberIdClean,
           password: currentPassword,
         });
 
@@ -90,26 +90,9 @@ export default function ChangePasswordPage() {
       });
 
       if (updateError) {
-        // If update fails, try password reset flow
-        const memberEmail = `m${member?.member_id?.replace(/-/g, '')}@example.com`;
-        const { error: resetError } = await supabase.auth.resetPasswordForEmail(memberEmail, {
-          redirectTo: `${window.location.origin}/auth/reset-password`,
-        });
-
-        if (resetError) {
-          throw new Error('Impossible de changer le mot de passe. Veuillez contacter un administrateur.');
-        } else {
-          // Reset email sent
-          await supabase
-            .from('members')
-            .update({ 
-              is_default_password: false 
-            })
-            .eq('id', member?.id);
-
-          setSuccess('Un email de réinitialisation a été envoyé. Veuillez vérifier votre boîte de réception pour finaliser le changement de mot de passe.');
-          return;
-        }
+        // If update fails, we can't use resetPasswordForEmail with phone auth
+        // Instead, ask user to contact admin
+        throw new Error('Impossible de changer le mot de passe automatiquement. Veuillez contacter un administrateur pour réinitialiser votre mot de passe.');
       } else {
         // Password updated successfully
         await supabase

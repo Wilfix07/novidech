@@ -183,23 +183,18 @@ export default function AdminMembersPage() {
         throw new Error(insertError.message || 'Erreur lors de la création du membre');
       }
 
-      // Create auth user with default password
-      // Use a valid email format: m{id}@example.com
-      // Using example.com (RFC 2606 reserved domain) ensures Supabase accepts it
-      // Format: m{id} avoids starting with a number and keeps it short
-      const memberIdClean = data.member_id.replace(/-/g, '');
-      const memberEmail = `m${memberIdClean}@example.com`;
+      // Create auth user with default password using phone field with numeric ID
+      const memberIdClean = data.member_id.replace(/-/g, '').trim();
       
-      // Create auth user account
+      // Create auth user account using phone field
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email: memberEmail,
+        phone: memberIdClean,
         password: formData.default_password,
         options: {
           data: {
             full_name: formData.full_name.trim(),
             member_id: data.member_id,
           },
-          emailRedirectTo: undefined, // Don't require email confirmation for admin-created accounts
         },
       });
 
@@ -210,10 +205,8 @@ export default function AdminMembersPage() {
         
         // Provide more specific error message
         let errorMessage = 'Erreur lors de la création du compte.';
-        if (signUpError.message?.includes('email') || signUpError.message?.includes('invalid')) {
-          errorMessage = `L'adresse email générée (${memberEmail}) est invalide. Erreur: ${signUpError.message}`;
-        } else if (signUpError.message?.includes('already registered') || signUpError.message?.includes('already exists')) {
-          errorMessage = `Un compte existe déjà avec cet email. Veuillez utiliser un autre numéro de membre.`;
+        if (signUpError.message?.includes('already registered') || signUpError.message?.includes('already exists')) {
+          errorMessage = `Un compte existe déjà avec cet ID (${memberIdClean}). Veuillez utiliser un autre numéro de membre.`;
         } else {
           errorMessage = `Erreur lors de la création du compte: ${signUpError.message || 'Erreur inconnue'}`;
         }
@@ -235,7 +228,7 @@ export default function AdminMembersPage() {
           .from('profiles')
           .upsert({
             id: signUpData.user.id,
-            email: memberEmail,
+            email: null, // No email when using phone auth
             full_name: formData.full_name.trim(),
             role: 'member',
             approved: true, // Auto-approve members created by admin

@@ -88,7 +88,7 @@ function FirstLoginForm() {
     setLoading(true);
 
     try {
-      // Get member info to create email
+      // Get member info
       const { data: memberData, error: memberError } = await supabase
         .rpc('member_can_login', { member_id_input: memberId.replace(/-/g, '') });
 
@@ -97,14 +97,13 @@ function FirstLoginForm() {
       }
 
       const member = memberData[0];
-      const memberEmail = member.email;
+      const cleanMemberId = memberId.replace(/-/g, '').trim();
 
-      // Create auth user account
+      // Create auth user account using phone field with numeric ID
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email: memberEmail,
+        phone: cleanMemberId,
         password: password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/login`,
           data: {
             full_name: member.full_name,
             member_id: member.member_id,
@@ -117,7 +116,7 @@ function FirstLoginForm() {
         if (signUpError.message?.includes('already registered') || signUpError.message?.includes('User already registered')) {
           // Try to sign in with the password
           const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-            email: memberEmail,
+            phone: cleanMemberId,
             password: password,
           });
 
@@ -149,7 +148,6 @@ function FirstLoginForm() {
       // New user created successfully
       if (signUpData.user) {
         // Update member to link profile_id to the new user
-        // Find member by profile_id (old profile_id from member record)
         const { data: memberUpdateData, error: updateError } = await supabase
           .from('members')
           .select('id')
@@ -179,7 +177,7 @@ function FirstLoginForm() {
           .from('profiles')
           .upsert({
             id: signUpData.user.id,
-            email: memberEmail,
+            email: null, // No email when using phone auth
             full_name: member.full_name,
             role: 'member',
             approved: true, // Auto-approve members created by admin
@@ -193,12 +191,12 @@ function FirstLoginForm() {
 
         // Sign in automatically
         const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-          email: memberEmail,
+          phone: cleanMemberId,
           password: password,
         });
 
         if (signInError) {
-          setError('Compte créé avec succès! Veuillez vous connecter avec votre numéro de membre.');
+          setError('Compte créé avec succès! Veuillez vous connecter avec votre numéro d\'identification.');
           setTimeout(() => {
             router.push('/auth/login');
           }, 2000);
@@ -207,9 +205,10 @@ function FirstLoginForm() {
           router.refresh();
         }
       }
-    } catch (err: any) {
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Erreur lors de la création du compte. Veuillez contacter un administrateur.';
       console.error('Error setting password:', err);
-      setError(err.message || 'Erreur lors de la création du compte. Veuillez contacter un administrateur.');
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -265,7 +264,7 @@ function FirstLoginForm() {
         <form onSubmit={handleSetPassword} className="space-y-6">
           <div>
             <label htmlFor="memberId" className="block text-sm font-medium text-text mb-2">
-              Numéro de membre
+              Numéro d&apos;identification
             </label>
             <input
               id="memberId"
@@ -276,9 +275,11 @@ function FirstLoginForm() {
               disabled={!!(typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('member_id'))}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-100"
               placeholder="250000101"
+              pattern="[0-9]+"
+              inputMode="numeric"
             />
             <p className="mt-1 text-sm text-gray-500">
-              Entrez votre numéro de membre sans les tirets
+              Entrez votre numéro d&apos;identification sans les tirets
             </p>
           </div>
 
@@ -351,4 +352,3 @@ export default function FirstLoginPage() {
     </Suspense>
   );
 }
-
