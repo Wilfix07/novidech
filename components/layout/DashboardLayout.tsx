@@ -101,6 +101,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const adminNavItems = [
     { href: '/dashboard/admin/members', label: 'Gestion des Membres', icon: '👥' },
     { href: '/dashboard/admin/user-approvals', label: 'Approbation Utilisateurs', icon: '✅' },
+    { href: '/dashboard/admin/loan-config', label: 'Configuration des Prêts', icon: '⚙️' },
     { href: '/dashboard/admin/membership-form', label: 'Formulaire d&apos;Adhésion', icon: '📝' },
     { href: '/dashboard/admin/expense-categories', label: 'Catégories de Dépenses', icon: '🏷️' },
     { href: '/dashboard/admin/interest-distribution', label: 'Partage des Intérêts', icon: '💰' },

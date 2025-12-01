@@ -176,7 +176,14 @@ export default function AdminMembersPage() {
         throw new Error(insertError.message || 'Erreur lors de la création du membre');
       }
 
-      setSuccess(`Membre créé avec succès! Numéro: ${data.member_id}`);
+      // Create auth user for the member
+      const memberEmail = data.member_id.replace(/-/g, '') + '@mutuelle.local';
+      
+      // Note: We can't create auth.users directly from client
+      // The member will create their account on first login
+      // But we can prepare the profile
+      
+      setSuccess(`Membre créé avec succès! Numéro: ${data.member_id}. Le membre peut maintenant se connecter avec son numéro (${data.member_id.replace(/-/g, '')}) et créer son mot de passe.`);
       setFormData({
         profile_id: '',
         full_name: '',

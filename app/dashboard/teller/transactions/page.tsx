@@ -40,6 +40,7 @@ export default function TellerTransactionsPage() {
   const [activeTab, setActiveTab] = useState<TransactionType>('contribution');
   const [members, setMembers] = useState<MemberOption[]>([]);
   const [expenseCategories, setExpenseCategories] = useState<ExpenseCategory[]>([]);
+  const [loanConfig, setLoanConfig] = useState<{ interest_rate: number; default_duration_days: number; payment_frequency: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -58,12 +59,25 @@ export default function TellerTransactionsPage() {
       if (isTellerUser) {
         await loadMembers();
         await loadExpenseCategories();
+        await loadLoanConfig();
       } else {
         setLoading(false);
       }
     };
     initialize();
   }, []);
+
+  // Update form data when loan config is loaded or tab changes
+  useEffect(() => {
+    if (activeTab === 'loan' && loanConfig) {
+      setFormData((prev) => ({
+        ...prev,
+        interest_rate: loanConfig.interest_rate.toString(),
+        duration_days: loanConfig.default_duration_days.toString(),
+        payment_frequency_loan: loanConfig.payment_frequency as 'weekly' | 'biweekly' | 'monthly',
+      }));
+    }
+  }, [activeTab, loanConfig]);
 
   const checkTellerRole = async (): Promise<boolean> => {
     try {
@@ -131,6 +145,52 @@ export default function TellerTransactionsPage() {
       setMembers([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadLoanConfig = async () => {
+    try {
+      const { data, error: fetchError } = await supabase
+        .from('loan_config')
+        .select('interest_rate, default_duration_days, payment_frequency')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (fetchError) {
+        console.error('Error fetching loan config:', fetchError);
+        // Use default values if config not found
+        setLoanConfig({
+          interest_rate: 5.00,
+          default_duration_days: 60,
+          payment_frequency: 'monthly',
+        });
+        return;
+      }
+
+      if (data) {
+        setLoanConfig({
+          interest_rate: data.interest_rate,
+          default_duration_days: data.default_duration_days,
+          payment_frequency: data.payment_frequency,
+        });
+      } else {
+        // Use default values if no config exists
+        setLoanConfig({
+          interest_rate: 5.00,
+          default_duration_days: 60,
+          payment_frequency: 'monthly',
+        });
+      }
+    } catch (err) {
+      console.error('Error loading loan config:', err);
+      // Use default values on error
+      setLoanConfig({
+        interest_rate: 5.00,
+        default_duration_days: 60,
+        payment_frequency: 'monthly',
+      });
     }
   };
 
@@ -288,9 +348,9 @@ export default function TellerTransactionsPage() {
       .insert({
         member_id: formData.member_id,
         amount: parseFloat(formData.amount),
-        interest_rate: parseFloat(formData.interest_rate || '0'),
-        payment_frequency: formData.payment_frequency_loan || 'monthly',
-        duration_days: parseInt(formData.duration_days || '30'),
+        interest_rate: parseFloat(formData.interest_rate || (loanConfig?.interest_rate.toString() || '0')),
+        payment_frequency: formData.payment_frequency_loan || (loanConfig?.payment_frequency || 'monthly'),
+        duration_days: parseInt(formData.duration_days || (loanConfig?.default_duration_days.toString() || '30')),
         status: 'pending',
       });
 
@@ -576,41 +636,61 @@ export default function TellerTransactionsPage() {
                   <div>
                     <label htmlFor="interest_rate" className="block text-sm font-medium text-gray-700 mb-2">
                       Taux d&apos;intérêt (%)
+                      {loanConfig && (
+                        <span className="text-xs text-gray-500 ml-2">
+                          (Par défaut: {loanConfig.interest_rate}%)
+                        </span>
+                      )}
                     </label>
                     <input
                       type="number"
                       id="interest_rate"
                       name="interest_rate"
-                      value={formData.interest_rate || '0'}
+                      value={formData.interest_rate || (loanConfig?.interest_rate.toString() || '0')}
                       onChange={handleInputChange}
                       min="0"
                       max="100"
                       step="0.01"
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                      placeholder={loanConfig?.interest_rate.toString() || '5.00'}
                     />
                   </div>
                   <div>
                     <label htmlFor="duration_days" className="block text-sm font-medium text-gray-700 mb-2">
                       Durée (jours)
+                      {loanConfig && (
+                        <span className="text-xs text-gray-500 ml-2">
+                          (Par défaut: {loanConfig.default_duration_days} jours)
+                        </span>
+                      )}
                     </label>
                     <input
                       type="number"
                       id="duration_days"
                       name="duration_days"
-                      value={formData.duration_days || '30'}
+                      value={formData.duration_days || (loanConfig?.default_duration_days.toString() || '30')}
                       onChange={handleInputChange}
                       min="1"
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                      placeholder={loanConfig?.default_duration_days.toString() || '60'}
                     />
                   </div>
                   <div>
                     <label htmlFor="payment_frequency_loan" className="block text-sm font-medium text-gray-700 mb-2">
                       Fréquence de paiement
+                      {loanConfig && (
+                        <span className="text-xs text-gray-500 ml-2">
+                          (Par défaut: {
+                            loanConfig.payment_frequency === 'weekly' ? 'Hebdomadaire' :
+                            loanConfig.payment_frequency === 'biweekly' ? 'Bi-hebdomadaire' : 'Mensuel'
+                          })
+                        </span>
+                      )}
                     </label>
                     <select
                       id="payment_frequency_loan"
                       name="payment_frequency_loan"
-                      value={formData.payment_frequency_loan || 'monthly'}
+                      value={formData.payment_frequency_loan || (loanConfig?.payment_frequency || 'monthly')}
                       onChange={handleInputChange}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                     >

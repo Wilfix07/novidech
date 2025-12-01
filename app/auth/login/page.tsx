@@ -7,7 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState(''); // Can be email or member_id
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,8 +19,33 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
+      // Check if identifier is a member_id (numeric without @) or email
+      const isMemberId = /^\d+$/.test(identifier.replace(/-/g, ''));
+      
+      let loginEmail = identifier;
+      
+      if (isMemberId) {
+        // It's a member_id, check if member exists and get email
+        const { data: memberData, error: memberError } = await supabase
+          .rpc('member_can_login', { member_id_input: identifier.replace(/-/g, '') });
+        
+        if (memberError || !memberData || memberData.length === 0) {
+          throw new Error('Numéro de membre non trouvé');
+        }
+        
+        const member = memberData[0];
+        loginEmail = member.email;
+        
+        // If password is not set, redirect to first login page
+        if (!member.can_login) {
+          router.push(`/auth/first-login?member_id=${encodeURIComponent(identifier.replace(/-/g, ''))}`);
+          return;
+        }
+      }
+      
+      // Try to login with email and password
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: loginEmail,
         password,
       });
 
@@ -60,18 +85,21 @@ export default function LoginPage() {
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-text mb-2">
-              Email
+            <label htmlFor="identifier" className="block text-sm font-medium text-text mb-2">
+              Email ou Numéro de membre
             </label>
             <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="identifier"
+              type="text"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              placeholder="votre@email.com"
+              placeholder="votre@email.com ou 250000101"
             />
+            <p className="mt-1 text-sm text-gray-500">
+              Utilisez votre email ou votre numéro de membre (sans les tirets)
+            </p>
           </div>
 
           <div>
