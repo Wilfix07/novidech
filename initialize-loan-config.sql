@@ -53,3 +53,4 @@ RETURNING *;
 --   interest_rate, default_duration_days, payment_frequency, is_active, created_by
 -- ) VALUES (5.00, 90, 'monthly', true, auth.uid());
 
+

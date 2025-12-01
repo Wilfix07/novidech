@@ -10,6 +10,7 @@ import type { Transaction } from '@/types';
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>('all');
 
   useEffect(() => {
@@ -26,31 +27,49 @@ export default function TransactionsPage() {
 
         if (memberError) {
           console.error('Member error:', memberError);
-          // Member error is logged but we continue - transactions page doesn't have error state
+          // Provide more specific error message based on error code
+          let errorMessage = 'Erreur lors du chargement du profil membre.';
+          if (memberError.code === 'PGRST301' || memberError.message?.includes('permission') || memberError.message?.includes('row-level security')) {
+            errorMessage = 'Vous n\'avez pas les permissions nécessaires pour accéder à votre profil membre. Veuillez contacter un administrateur.';
+          } else if (memberError.code === 'PGRST116') {
+            errorMessage = 'Aucun profil membre trouvé. Veuillez contacter un administrateur pour créer votre profil.';
+          } else {
+            errorMessage = `Erreur lors du chargement du profil membre: ${memberError.message || 'Erreur inconnue'}`;
+          }
+          setError(errorMessage);
+          setLoading(false);
           return;
         }
 
-        if (memberData) {
-          let query = supabase
-            .from('transactions')
-            .select('*')
-            .eq('member_id', memberData.id)
-            .order('transaction_date', { ascending: false });
+        if (!memberData) {
+          setError('Aucun profil membre trouvé. Veuillez contacter un administrateur pour créer votre profil.');
+          setLoading(false);
+          return;
+        }
 
-          if (filter !== 'all') {
-            query = query.eq('type', filter);
-          }
+        setError(null); // Clear any previous errors
 
-          const { data: transactionsData, error: queryError } = await query;
-          
-          if (queryError) {
-            console.error('Error fetching transactions:', queryError);
-            return;
-          }
+        let query = supabase
+          .from('transactions')
+          .select('*')
+          .eq('member_id', memberData.id)
+          .order('transaction_date', { ascending: false });
 
-          if (transactionsData) {
-            setTransactions(transactionsData as Transaction[]);
-          }
+        if (filter !== 'all') {
+          query = query.eq('type', filter);
+        }
+
+        const { data: transactionsData, error: queryError } = await query;
+        
+        if (queryError) {
+          console.error('Error fetching transactions:', queryError);
+          setError(`Erreur lors du chargement des transactions: ${queryError.message || 'Erreur inconnue'}`);
+          setLoading(false);
+          return;
+        }
+
+        if (transactionsData) {
+          setTransactions(transactionsData as Transaction[]);
         }
       } catch (error) {
         console.error('Error fetching transactions:', error);
@@ -102,6 +121,13 @@ export default function TransactionsPage() {
             <h1 className="text-3xl font-bold text-text mb-2">Transactions</h1>
             <p className="text-gray-600">Historique complet de vos transactions</p>
           </div>
+
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+              <p className="font-semibold">Erreur</p>
+              <p>{error}</p>
+            </div>
+          )}
 
           <div className="bg-white rounded-lg shadow-md p-4">
             <div className="flex flex-wrap gap-2">

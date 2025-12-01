@@ -222,3 +222,4 @@ COMMENT ON TABLE public.interest_distributions IS 'Historique des distributions 
 COMMENT ON FUNCTION public.calculate_collected_interest IS 'Calcule le total des intérêts collectés sur les prêts';
 COMMENT ON FUNCTION public.distribute_interest IS 'Distribue les intérêts collectés équitablement entre tous les membres actifs';
 
+

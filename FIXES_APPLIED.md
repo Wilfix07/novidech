@@ -95,3 +95,4 @@ Toutes les dépendances sont installées et à jour :
 4. Optimiser les performances avec React Query
 5. Mettre à jour les dépendances quand disponible
 
+

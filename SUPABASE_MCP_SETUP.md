@@ -122,3 +122,4 @@ If you still get access errors after configuring MCP:
 4. Try using read-only mode by adding `--read-only` to the args array
 5. Check Cursor's MCP settings to see if the server is connected (should show green status)
 
+

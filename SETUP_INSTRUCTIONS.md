@@ -47,3 +47,4 @@ To enable the AI assistant to manage your database via MCP:
 - Timestamp tracking (created_at, updated_at)
 - Email index for performance
 
+

@@ -154,3 +154,4 @@ COMMENT ON TABLE public.loan_config IS 'Configuration des prêts définie par le
 COMMENT ON COLUMN public.loans.payment_frequency IS 'Fréquence de paiement : weekly, biweekly, monthly';
 COMMENT ON COLUMN public.contributions.payment_frequency IS 'Fréquence de paiement choisie par le membre';
 
+

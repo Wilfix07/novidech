@@ -68,3 +68,4 @@ CREATE TRIGGER set_updated_at
 -- Create an index on email for faster lookups
 CREATE INDEX IF NOT EXISTS profiles_email_idx ON public.profiles(email);
 
+

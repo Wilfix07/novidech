@@ -33,7 +33,9 @@ export default function SignupPage() {
       if (error) throw error;
 
       if (data.user) {
-        router.push('/dashboard');
+        // Redirect to waiting approval page instead of dashboard
+        // The user will be redirected to dashboard once approved
+        router.push('/auth/waiting-approval');
         router.refresh();
       }
     } catch (err: any) {
@@ -133,4 +135,6 @@ export default function SignupPage() {
     </div>
   );
 }
+
+
 

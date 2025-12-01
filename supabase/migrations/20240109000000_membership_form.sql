@@ -199,3 +199,4 @@ COMMENT ON COLUMN public.membership_form_submissions.responses IS 'Réponses JSO
 COMMENT ON COLUMN public.membership_form_submissions.signature_data IS 'Image de signature encodée en Base64';
 COMMENT ON COLUMN public.members.form_completed IS 'Indique si le membre a complété le formulaire d''adhésion';
 
+

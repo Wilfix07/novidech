@@ -91,3 +91,4 @@ Un prêt est considéré comme étant en retard si :
 - Graphiques et statistiques sur les prêts en retard
 - Recherche par nom de membre ou ID membre
 
+

@@ -78,3 +78,4 @@ ON CONFLICT (name) DO NOTHING;
 COMMENT ON TABLE public.expense_categories IS 'Catégories de dépenses définies par l''admin';
 COMMENT ON COLUMN public.transactions.expense_category_id IS 'Catégorie de la dépense (uniquement pour les transactions de type expense)';
 
+

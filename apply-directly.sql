@@ -88,3 +88,4 @@ CREATE INDEX IF NOT EXISTS profiles_email_idx ON public.profiles(email);
 -- SELECT * FROM public.profiles LIMIT 1;
 -- ============================================
 
+

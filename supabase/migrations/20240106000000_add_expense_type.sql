@@ -15,3 +15,4 @@ COMMENT ON COLUMN public.transactions.type IS
 -- Note: Tellers can already insert transactions via existing RLS policy
 -- "Tellers can insert transactions" policy covers all transaction types including expenses
 
+

@@ -9,16 +9,11 @@ import ContributionChart from '@/components/dashboard/ContributionChart';
 import BalanceChart from '@/components/dashboard/BalanceChart';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
-import type { Transaction } from '@/types';
-
-interface Member {
-  id: string;
-  profile_id: string;
-}
+import type { Transaction, Member } from '@/types';
 
 export default function DashboardPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [member, setMember] = useState<Member | null>(null);
+  const [member, setMember] = useState<Pick<Member, 'id' | 'profile_id'> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState({
@@ -47,7 +42,16 @@ export default function DashboardPage() {
 
         if (memberError) {
           console.error('Error fetching member:', memberError);
-          setError('Erreur lors du chargement du profil membre.');
+          // Provide more specific error message based on error code
+          let errorMessage = 'Erreur lors du chargement du profil membre.';
+          if (memberError.code === 'PGRST301' || memberError.message?.includes('permission') || memberError.message?.includes('row-level security')) {
+            errorMessage = 'Vous n\'avez pas les permissions nécessaires pour accéder à votre profil membre. Veuillez contacter un administrateur.';
+          } else if (memberError.code === 'PGRST116') {
+            errorMessage = 'Aucun profil membre trouvé. Veuillez contacter un administrateur pour créer votre profil.';
+          } else {
+            errorMessage = `Erreur lors du chargement du profil membre: ${memberError.message || 'Erreur inconnue'}`;
+          }
+          setError(errorMessage);
           setLoading(false);
           return;
         }

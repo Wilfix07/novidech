@@ -39,7 +39,16 @@ export default function MembershipFormPage() {
 
       if (memberError) {
         console.error('Member error:', memberError);
-        setError('Erreur lors du chargement du profil membre');
+        // Provide more specific error message based on error code
+        let errorMessage = 'Erreur lors du chargement du profil membre.';
+        if (memberError.code === 'PGRST301' || memberError.message?.includes('permission') || memberError.message?.includes('row-level security')) {
+          errorMessage = 'Vous n\'avez pas les permissions nécessaires pour accéder à votre profil membre. Veuillez contacter un administrateur.';
+        } else if (memberError.code === 'PGRST116') {
+          errorMessage = 'Aucun profil membre trouvé. Veuillez contacter un administrateur pour créer votre profil.';
+        } else {
+          errorMessage = `Erreur lors du chargement du profil membre: ${memberError.message || 'Erreur inconnue'}`;
+        }
+        setError(errorMessage);
         return;
       }
 

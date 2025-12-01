@@ -10,3 +10,4 @@ export default function ClientErrorBoundary({
   return <ErrorBoundary>{children}</ErrorBoundary>;
 }
 
+

@@ -38,12 +38,12 @@ export default function AuthGuard({ children }: AuthGuardProps) {
           return;
         }
 
-        // Check if user is a member and needs to complete the form
+        // Check if user is approved
         try {
-          // Get user profile to check role
+          // Get user profile to check role and approval status
           const { data: profile, error: profileError } = await supabase
             .from('profiles')
-            .select('role')
+            .select('role, approved')
             .eq('id', user.id)
             .maybeSingle(); // Use maybeSingle() instead of single() to handle no rows
 
@@ -51,6 +51,17 @@ export default function AuthGuard({ children }: AuthGuardProps) {
             console.error('Profile error:', profileError);
             setCheckingForm(false);
             return;
+          }
+
+          // Check if user is approved (admins are always approved)
+          if (profile && profile.role !== 'admin' && !profile.approved) {
+            // User is not approved, show waiting message
+            // Allow access to a waiting page or show message
+            if (pathname !== '/auth/waiting-approval') {
+              router.push('/auth/waiting-approval');
+              setCheckingForm(false);
+              return;
+            }
           }
 
           if (profile?.role === 'member') {

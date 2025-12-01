@@ -10,13 +10,14 @@ export type TransactionType =
 
 export interface Transaction {
   id: string;
-  member_id: string;
+  member_id: string | null; // Can be null for expense transactions
   type: TransactionType;
   amount: number;
   description: string | null;
   transaction_date: string;
   created_at: string;
   created_by: string | null;
+  expense_category_id?: string | null; // Optional category for expenses
 }
 
 export interface Member {
@@ -68,6 +69,10 @@ export interface Profile {
   full_name: string | null;
   avatar_url: string | null;
   role: 'member' | 'admin' | 'treasurer' | 'teller';
+  approved: boolean;
+  approved_at: string | null;
+  approved_by: string | null;
+  rejection_reason: string | null;
   created_at: string;
   updated_at: string;
 }

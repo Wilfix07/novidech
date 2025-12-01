@@ -175,3 +175,4 @@ ORDER BY month DESC;
 Cette fonctionnalité a été ajoutée dans la migration :
 - `20240104000000_auto_generate_member_id.sql`
 
+

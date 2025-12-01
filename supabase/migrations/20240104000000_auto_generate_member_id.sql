@@ -60,3 +60,4 @@ CREATE TRIGGER auto_generate_member_id_trigger
 COMMENT ON FUNCTION public.generate_member_id() IS 
 'Generates automatic member ID in format 0000-MOIS (e.g., 0001-NOV, 0002-DEC) based on creation month. The sequence resets each month.';
 
+

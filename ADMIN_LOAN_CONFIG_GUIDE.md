@@ -234,3 +234,4 @@ Ces valeurs sont stockées dans les colonnes :
 - `due_date`
 - `total_amount` (calculé via la fonction)
 
+

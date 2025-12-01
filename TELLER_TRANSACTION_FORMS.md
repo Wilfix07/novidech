@@ -123,3 +123,4 @@ Tous les formulaires partagent les champs suivants :
 - Notifications après enregistrement
 - Mode hors ligne avec synchronisation
 
+

@@ -136,3 +136,4 @@ Un paiement est considéré comme payé si:
 - Rappels par email/SMS
 - Vue calendrier mensuel des échéances
 
+

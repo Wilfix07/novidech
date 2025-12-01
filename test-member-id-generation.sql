@@ -69,3 +69,4 @@ VALUES (
 -- Le member_id sera généré automatiquement au format 0000-MOIS
 */
 
+

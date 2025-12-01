@@ -225,6 +225,11 @@ export default function TellerTransactionsPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Utilisateur non connecté');
 
+    // Convert date string to ISO format for timestamp
+    const transactionDate = formData.transaction_date 
+      ? new Date(formData.transaction_date).toISOString()
+      : new Date().toISOString();
+
     // Create transaction
     const { error: transactionError } = await supabase
       .from('transactions')
@@ -233,7 +238,7 @@ export default function TellerTransactionsPage() {
         type: 'contribution',
         amount: parseFloat(formData.amount),
         description: formData.description || 'Contribution',
-        transaction_date: formData.transaction_date,
+        transaction_date: transactionDate,
         created_by: user.id,
       });
 
@@ -245,9 +250,9 @@ export default function TellerTransactionsPage() {
       .insert({
         member_id: formData.member_id,
         amount: parseFloat(formData.amount),
-        contribution_date: formData.transaction_date,
+        contribution_date: transactionDate,
         payment_frequency: formData.payment_frequency || 'monthly',
-        period: formData.period || new Date(formData.transaction_date).toISOString().slice(0, 7),
+        period: formData.period || new Date(transactionDate).toISOString().slice(0, 7),
         created_by: user.id,
       });
 
@@ -258,6 +263,11 @@ export default function TellerTransactionsPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Utilisateur non connecté');
 
+    // Convert date string to ISO format for timestamp
+    const transactionDate = formData.transaction_date 
+      ? new Date(formData.transaction_date).toISOString()
+      : new Date().toISOString();
+
     // Create transaction
     const { error: transactionError } = await supabase
       .from('transactions')
@@ -266,7 +276,7 @@ export default function TellerTransactionsPage() {
         type: 'loan',
         amount: parseFloat(formData.amount),
         description: formData.description || 'Prêt',
-        transaction_date: formData.transaction_date,
+        transaction_date: transactionDate,
         created_by: user.id,
       });
 
@@ -291,6 +301,11 @@ export default function TellerTransactionsPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Utilisateur non connecté');
 
+    // Convert date string to ISO format for timestamp
+    const transactionDate = formData.transaction_date 
+      ? new Date(formData.transaction_date).toISOString()
+      : new Date().toISOString();
+
     // Create transaction
     const { error: transactionError } = await supabase
       .from('transactions')
@@ -299,7 +314,7 @@ export default function TellerTransactionsPage() {
         type: 'payment',
         amount: parseFloat(formData.amount),
         description: formData.description || 'Paiement de prêt',
-        transaction_date: formData.transaction_date,
+        transaction_date: transactionDate,
         created_by: user.id,
       });
 
@@ -310,6 +325,11 @@ export default function TellerTransactionsPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Utilisateur non connecté');
 
+    // Convert date string to ISO format for timestamp
+    const transactionDate = formData.transaction_date 
+      ? new Date(formData.transaction_date).toISOString()
+      : new Date().toISOString();
+
     // Create transaction
     const { error: transactionError } = await supabase
       .from('transactions')
@@ -318,7 +338,7 @@ export default function TellerTransactionsPage() {
         type: 'withdrawal',
         amount: parseFloat(formData.amount),
         description: formData.description || 'Retrait',
-        transaction_date: formData.transaction_date,
+        transaction_date: transactionDate,
         created_by: user.id,
       });
 
@@ -333,6 +353,11 @@ export default function TellerTransactionsPage() {
       throw new Error('Veuillez sélectionner une catégorie de dépense');
     }
 
+    // Convert date string to ISO format for timestamp
+    const transactionDate = formData.transaction_date 
+      ? new Date(formData.transaction_date).toISOString()
+      : new Date().toISOString();
+
     // Create transaction
     const { error: transactionError } = await supabase
       .from('transactions')
@@ -341,12 +366,15 @@ export default function TellerTransactionsPage() {
         type: 'expense',
         amount: parseFloat(formData.amount),
         description: formData.description || 'Dépense',
-        transaction_date: formData.transaction_date,
+        transaction_date: transactionDate,
         expense_category_id: formData.expense_category_id,
         created_by: user.id,
       });
 
-    if (transactionError) throw transactionError;
+    if (transactionError) {
+      console.error('Transaction error details:', transactionError);
+      throw transactionError;
+    }
   };
 
   if (!isTeller) {
