@@ -63,7 +63,7 @@ export default function LoginPage() {
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
             <label htmlFor="identifier" className="block text-sm font-medium text-text mb-2">
-              Numéro de membre ou Email
+              Email ou Numéro de membre
             </label>
             <input
               id="identifier"
@@ -72,10 +72,11 @@ export default function LoginPage() {
               onChange={(e) => setIdentifier(e.target.value)}
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-              placeholder="250000001 ou email@example.com"
+              placeholder="email@example.com ou 250000001"
+              autoComplete="username"
             />
             <p className="mt-1 text-sm text-gray-500">
-              Entrez votre numéro de membre (ex: 250000001) ou votre adresse email
+              Entrez votre adresse email ou votre numéro de membre
             </p>
           </div>
 
@@ -91,6 +92,7 @@ export default function LoginPage() {
               required
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
               placeholder="••••••••"
+              autoComplete="current-password"
             />
           </div>
 
@@ -103,11 +105,16 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-6 text-center">
+        <div className="mt-6 text-center space-y-2">
           <p className="text-gray-600">
             Pas encore de compte?{' '}
             <Link href="/signup" className="text-primary font-semibold hover:underline">
               Créer un compte
+            </Link>
+          </p>
+          <p className="text-sm text-gray-500">
+            <Link href="/auth/reset-password" className="text-primary hover:underline">
+              Mot de passe oublié?
             </Link>
           </p>
         </div>
@@ -115,3 +122,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

@@ -173,3 +173,4 @@ La distribution se fait de manière équitable:
 - Calcul des intérêts basé sur les paiements réels plutôt que théoriques
 
 
+

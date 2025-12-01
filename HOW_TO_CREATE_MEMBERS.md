@@ -146,3 +146,4 @@ ORDER BY m.created_at DESC;
   2. L'utilisateur est approuvé (`approved = true`)
   3. Le trigger existe : `SELECT * FROM pg_trigger WHERE tgname = 'on_member_approved'`
 
+

@@ -29,3 +29,4 @@ fi
 echo "Migration applied successfully!"
 
 
+

@@ -16,3 +16,4 @@ COMMENT ON COLUMN public.transactions.type IS
 -- "Tellers can insert transactions" policy covers all transaction types including expenses
 
 
+

@@ -130,3 +130,4 @@ Pour toute question ou problème, consultez:
 - [Documentation Supabase Auth](https://supabase.com/docs/guides/auth)
 - [Phone Auth Guide](https://supabase.com/docs/guides/auth/phone-login)
 
+

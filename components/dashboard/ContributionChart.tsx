@@ -45,3 +45,4 @@ export default function ContributionChart({ data }: ContributionChartProps) {
 
 
 
+

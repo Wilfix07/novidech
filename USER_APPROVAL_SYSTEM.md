@@ -132,3 +132,4 @@ Cette migration :
 2. Vérifiez la console du navigateur pour les erreurs
 3. L'utilisateur peut rafraîchir manuellement la page
 
+

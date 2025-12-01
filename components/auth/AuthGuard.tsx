@@ -23,7 +23,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
         
         if (authError) {
           console.error('Auth error:', authError);
-          router.push('/auth/login');
+          router.push('/login');
           setLoading(false);
           setCheckingForm(false);
           return;
@@ -33,7 +33,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
         setLoading(false);
 
         if (!user) {
-          router.push('/auth/login');
+          router.push('/login');
           setCheckingForm(false);
           return;
         }
@@ -129,7 +129,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (!session?.user) {
-        router.push('/auth/login');
+        router.push('/login');
       } else {
         // Re-check form status when auth state changes
         checkUser();

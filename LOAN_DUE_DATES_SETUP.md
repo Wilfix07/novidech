@@ -129,3 +129,4 @@ La migration `setup_loan_due_dates` :
 
 **Exécution automatique** : La migration exécute automatiquement `setup_active_loans_due_dates()` pour mettre à jour tous les prêts existants.
 
+

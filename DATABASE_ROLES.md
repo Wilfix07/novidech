@@ -158,3 +158,4 @@ All tables use Row Level Security (RLS) to enforce role-based permissions:
 - `20240103000000_add_teller_role.sql` - Added teller role and permissions
 
 
+

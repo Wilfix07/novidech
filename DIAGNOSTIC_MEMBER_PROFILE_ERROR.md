@@ -111,3 +111,4 @@ Les fichiers suivants ont été améliorés pour afficher des messages d'erreur 
 
 Ces fichiers vérifient maintenant le code d'erreur Supabase et affichent des messages appropriés selon le type d'erreur.
 
+

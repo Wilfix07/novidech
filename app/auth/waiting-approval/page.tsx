@@ -17,7 +17,7 @@ export default function WaitingApprovalPage() {
         const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
         
         if (authError || !authUser) {
-          router.push('/auth/login');
+          router.push('/login');
           return;
         }
 
@@ -57,7 +57,7 @@ export default function WaitingApprovalPage() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.push('/auth/login');
+    router.push('/login');
   };
 
   if (loading) {
@@ -117,4 +117,5 @@ export default function WaitingApprovalPage() {
     </div>
   );
 }
+
 

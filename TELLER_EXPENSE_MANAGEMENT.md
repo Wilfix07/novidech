@@ -318,3 +318,4 @@ Cette fonctionnalité a été ajoutée dans la migration :
 - `20240106000000_add_expense_type.sql`
 
 
+

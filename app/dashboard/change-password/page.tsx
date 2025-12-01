@@ -73,8 +73,9 @@ export default function ChangePasswordPage() {
       // If not default password, verify current password first
       if (!isDefaultPassword && currentPassword) {
         const memberIdClean = member?.member_id?.replace(/-/g, '').trim();
+        const technicalEmail = `${memberIdClean}@members.tikredi.ht`;
         const { error: signInError } = await supabase.auth.signInWithPassword({
-          phone: memberIdClean,
+          email: technicalEmail,
           password: currentPassword,
         });
 

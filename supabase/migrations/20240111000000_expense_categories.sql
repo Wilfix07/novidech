@@ -79,3 +79,4 @@ COMMENT ON TABLE public.expense_categories IS 'Catégories de dépenses définie
 COMMENT ON COLUMN public.transactions.expense_category_id IS 'Catégorie de la dépense (uniquement pour les transactions de type expense)';
 
 
+

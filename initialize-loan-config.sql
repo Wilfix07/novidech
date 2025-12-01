@@ -54,3 +54,4 @@ RETURNING *;
 -- ) VALUES (5.00, 90, 'monthly', true, auth.uid());
 
 
+

@@ -37,3 +37,4 @@ FROM public.members m
 JOIN public.profiles p ON p.id = m.profile_id
 ORDER BY m.created_at DESC;
 
+

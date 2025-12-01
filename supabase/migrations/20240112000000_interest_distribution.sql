@@ -223,3 +223,4 @@ COMMENT ON FUNCTION public.calculate_collected_interest IS 'Calcule le total des
 COMMENT ON FUNCTION public.distribute_interest IS 'Distribue les intérêts collectés équitablement entre tous les membres actifs';
 
 
+

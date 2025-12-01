@@ -48,3 +48,4 @@ To enable the AI assistant to manage your database via MCP:
 - Email index for performance
 
 
+

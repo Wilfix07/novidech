@@ -26,3 +26,4 @@ COMMENT ON POLICY "Members can view all overdue loans" ON public.loans IS
   'Permet aux membres de voir tous les prêts en retard de la mutuelle pour transparence';
 
 
+

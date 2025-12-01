@@ -200,3 +200,4 @@ COMMENT ON COLUMN public.membership_form_submissions.signature_data IS 'Image de
 COMMENT ON COLUMN public.members.form_completed IS 'Indique si le membre a complété le formulaire d''adhésion';
 
 
+

@@ -44,7 +44,7 @@ function FirstLoginForm() {
       if (member.can_login) {
         setError('Vous avez déjà un mot de passe. Veuillez vous connecter.');
         setTimeout(() => {
-          router.push('/auth/login');
+          router.push('/login');
         }, 2000);
         return;
       }
@@ -98,15 +98,17 @@ function FirstLoginForm() {
 
       const member = memberData[0];
       const cleanMemberId = memberId.replace(/-/g, '').trim();
+      const technicalEmail = `${cleanMemberId}@members.tikredi.ht`;
 
-      // Create auth user account using phone field with numeric ID
+      // Create auth user account using technical email
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        phone: cleanMemberId,
+        email: technicalEmail,
         password: password,
         options: {
           data: {
             full_name: member.full_name,
             member_id: member.member_id,
+            true_email: null, // Member can add email later
           },
         },
       });
@@ -116,7 +118,7 @@ function FirstLoginForm() {
         if (signUpError.message?.includes('already registered') || signUpError.message?.includes('User already registered')) {
           // Try to sign in with the password
           const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-            phone: cleanMemberId,
+            email: technicalEmail,
             password: password,
           });
 
@@ -191,14 +193,14 @@ function FirstLoginForm() {
 
         // Sign in automatically
         const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-          phone: cleanMemberId,
+          email: technicalEmail,
           password: password,
         });
 
         if (signInError) {
           setError('Compte créé avec succès! Veuillez vous connecter avec votre numéro d\'identification.');
           setTimeout(() => {
-            router.push('/auth/login');
+            router.push('/login');
           }, 2000);
         } else {
           router.push('/dashboard');

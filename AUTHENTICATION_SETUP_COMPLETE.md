@@ -126,3 +126,4 @@ Si vous avez des utilisateurs existants qui utilisent l'authentification par ema
 
 Le système est prêt à être utilisé une fois que vous aurez désactivé la vérification OTP dans le dashboard Supabase.
 
+

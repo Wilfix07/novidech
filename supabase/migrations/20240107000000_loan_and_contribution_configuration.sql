@@ -155,3 +155,4 @@ COMMENT ON COLUMN public.loans.payment_frequency IS 'Fréquence de paiement : we
 COMMENT ON COLUMN public.contributions.payment_frequency IS 'Fréquence de paiement choisie par le membre';
 
 
+

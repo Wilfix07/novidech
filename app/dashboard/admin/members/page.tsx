@@ -183,17 +183,19 @@ export default function AdminMembersPage() {
         throw new Error(insertError.message || 'Erreur lors de la création du membre');
       }
 
-      // Create auth user with default password using phone field with numeric ID
+      // Create auth user with default password using technical email system
       const memberIdClean = data.member_id.replace(/-/g, '').trim();
+      const technicalEmail = `${memberIdClean}@members.tikredi.ht`;
       
-      // Create auth user account using phone field
+      // Create auth user account using technical email
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        phone: memberIdClean,
+        email: technicalEmail,
         password: formData.default_password,
         options: {
           data: {
             full_name: formData.full_name.trim(),
             member_id: data.member_id,
+            true_email: null, // Admin-created members don't have email yet
           },
         },
       });
@@ -228,7 +230,7 @@ export default function AdminMembersPage() {
           .from('profiles')
           .upsert({
             id: signUpData.user.id,
-            email: null, // No email when using phone auth
+            email: null, // Technical email is stored in auth.users, not in profiles
             full_name: formData.full_name.trim(),
             role: 'member',
             approved: true, // Auto-approve members created by admin

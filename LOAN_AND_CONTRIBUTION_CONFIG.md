@@ -319,3 +319,4 @@ Cette fonctionnalité a été ajoutée dans la migration :
 - `20240107000000_loan_and_contribution_configuration.sql`
 
 
+

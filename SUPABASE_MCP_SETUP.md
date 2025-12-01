@@ -123,3 +123,4 @@ If you still get access errors after configuring MCP:
 5. Check Cursor's MCP settings to see if the server is connected (should show green status)
 
 
+
