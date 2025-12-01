@@ -184,7 +184,10 @@ export default function AdminMembersPage() {
       }
 
       // Create auth user with default password
-      const memberEmail = data.member_id.replace(/-/g, '') + '@mutuelle.local';
+      // Use a valid email format: member-{id}@novidech-mutuelle.com
+      // This format is valid for Supabase (doesn't start with a number, uses valid domain)
+      const memberIdClean = data.member_id.replace(/-/g, '');
+      const memberEmail = `member-${memberIdClean}@novidech-mutuelle.com`;
       
       // Create auth user account
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
@@ -195,15 +198,25 @@ export default function AdminMembersPage() {
             full_name: formData.full_name.trim(),
             member_id: data.member_id,
           },
+          emailRedirectTo: undefined, // Don't require email confirmation for admin-created accounts
         },
       });
 
       if (signUpError) {
-        // If user already exists, try to update password
         console.error('SignUp error:', signUpError);
         // Delete the member if auth creation failed
         await supabase.from('members').delete().eq('id', data.id);
-        throw new Error('Erreur lors de la création du compte. Veuillez réessayer.');
+        
+        // Provide more specific error message
+        let errorMessage = 'Erreur lors de la création du compte.';
+        if (signUpError.message?.includes('email') || signUpError.message?.includes('invalid')) {
+          errorMessage = `L'adresse email générée (${memberEmail}) est invalide. Erreur: ${signUpError.message}`;
+        } else if (signUpError.message?.includes('already registered') || signUpError.message?.includes('already exists')) {
+          errorMessage = `Un compte existe déjà avec cet email. Veuillez utiliser un autre numéro de membre.`;
+        } else {
+          errorMessage = `Erreur lors de la création du compte: ${signUpError.message || 'Erreur inconnue'}`;
+        }
+        throw new Error(errorMessage);
       }
 
       if (signUpData.user) {

@@ -135,7 +135,7 @@ export default function PasswordChangeRequestsPage() {
       // For now, we'll mark it as approved and store the new password
       // The admin will need to manually change it in Supabase dashboard
 
-      alert(`Demande approuvée. Le nouveau mot de passe est: ${newPassword}\n\nIMPORTANT: Vous devez maintenant changer le mot de passe dans Supabase Dashboard pour l'utilisateur: ${request.member.member_id.replace(/-/g, '')}@mutuelle.local`);
+      alert(`Demande approuvée. Le nouveau mot de passe est: ${newPassword}\n\nIMPORTANT: Vous devez maintenant changer le mot de passe dans Supabase Dashboard pour l'utilisateur: member-${request.member.member_id.replace(/-/g, '')}@novidech-mutuelle.com`);
 
       setSelectedRequest(null);
       setNewPassword('');
@@ -444,7 +444,7 @@ export default function PasswordChangeRequestsPage() {
 
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                     <p className="text-sm text-blue-800">
-                      <strong>Note:</strong> Après approbation, vous devrez changer le mot de passe dans Supabase Dashboard pour l&apos;utilisateur: <code className="bg-blue-100 px-1 rounded">{selectedRequest.member?.member_id.replace(/-/g, '')}@mutuelle.local</code>
+                      <strong>Note:</strong> Après approbation, vous devrez changer le mot de passe dans Supabase Dashboard pour l&apos;utilisateur: <code className="bg-blue-100 px-1 rounded">member-{selectedRequest.member?.member_id.replace(/-/g, '')}@novidech-mutuelle.com</code>
                     </p>
                   </div>
 
