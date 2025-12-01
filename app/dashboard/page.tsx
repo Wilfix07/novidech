@@ -74,6 +74,18 @@ export default function DashboardPage() {
             return;
           }
 
+          // Get active loans count for the member
+          const { data: activeLoansData, error: loansError } = await supabase
+            .from('loans')
+            .select('id')
+            .eq('member_id', memberData.id)
+            .eq('status', 'active');
+
+          if (loansError) {
+            console.error('Error fetching active loans:', loansError);
+            // Don't block the page if loans query fails, just log the error
+          }
+
           if (transactionsData) {
             setTransactions(transactionsData as Transaction[]);
 
@@ -103,7 +115,7 @@ export default function DashboardPage() {
             setStats({
               totalBalance: balance,
               totalContributions: contributions,
-              activeLoans: 0, // Will be calculated when loans table is populated
+              activeLoans: activeLoansData?.length || 0,
               recentTransactions: transactionsData.length,
             });
           }
@@ -120,8 +132,8 @@ export default function DashboardPage() {
 
     fetchData();
 
-    // Set up realtime subscription
-    const channel = supabase
+    // Set up realtime subscriptions
+    const transactionsChannel = supabase
       .channel('transactions-changes')
       .on(
         'postgres_changes',
@@ -136,8 +148,24 @@ export default function DashboardPage() {
       )
       .subscribe();
 
+    const loansChannel = supabase
+      .channel('loans-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'loans',
+        },
+        () => {
+          fetchData();
+        }
+      )
+      .subscribe();
+
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(transactionsChannel);
+      supabase.removeChannel(loansChannel);
     };
   }, []);
 
