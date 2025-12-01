@@ -72,7 +72,7 @@ export default function ChangePasswordPage() {
 
       // If not default password, verify current password first
       if (!isDefaultPassword && currentPassword) {
-        const memberEmail = `member-${member?.member_id?.replace(/-/g, '')}@novidech-mutuelle.com`;
+        const memberEmail = `m${member?.member_id?.replace(/-/g, '')}@example.com`;
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email: memberEmail,
           password: currentPassword,
@@ -91,7 +91,7 @@ export default function ChangePasswordPage() {
 
       if (updateError) {
         // If update fails, try password reset flow
-        const memberEmail = `member-${member?.member_id?.replace(/-/g, '')}@novidech-mutuelle.com`;
+        const memberEmail = `m${member?.member_id?.replace(/-/g, '')}@example.com`;
         const { error: resetError } = await supabase.auth.resetPasswordForEmail(memberEmail, {
           redirectTo: `${window.location.origin}/auth/reset-password`,
         });

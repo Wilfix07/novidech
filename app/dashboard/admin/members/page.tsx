@@ -184,10 +184,11 @@ export default function AdminMembersPage() {
       }
 
       // Create auth user with default password
-      // Use a valid email format: member-{id}@novidech-mutuelle.com
-      // This format is valid for Supabase (doesn't start with a number, uses valid domain)
+      // Use a valid email format: m{id}@example.com
+      // Using example.com (RFC 2606 reserved domain) ensures Supabase accepts it
+      // Format: m{id} avoids starting with a number and keeps it short
       const memberIdClean = data.member_id.replace(/-/g, '');
-      const memberEmail = `member-${memberIdClean}@novidech-mutuelle.com`;
+      const memberEmail = `m${memberIdClean}@example.com`;
       
       // Create auth user account
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
