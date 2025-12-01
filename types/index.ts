@@ -28,6 +28,8 @@ export interface Member {
   address: string | null;
   join_date: string;
   status: 'active' | 'inactive' | 'suspended';
+  form_completed: boolean;
+  form_submission_id: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -79,5 +81,46 @@ export interface LoanConfig {
   created_at: string;
   updated_at: string;
   created_by: string | null;
+}
+
+export interface FormField {
+  id: string;
+  label: string;
+  type: 'text' | 'email' | 'tel' | 'date' | 'textarea' | 'select' | 'checkbox' | 'number';
+  required: boolean;
+  placeholder?: string;
+  options?: string[]; // For select fields
+  validation?: {
+    min?: number;
+    max?: number;
+    pattern?: string;
+  };
+}
+
+export interface MembershipFormConfig {
+  id: string;
+  is_active: boolean;
+  title: string;
+  description: string | null;
+  fields: FormField[];
+  created_at: string;
+  updated_at: string;
+  created_by: string | null;
+}
+
+export interface MembershipFormSubmission {
+  id: string;
+  member_id: string;
+  profile_id: string;
+  form_config_id: string | null;
+  responses: Record<string, any>;
+  signature_data: string | null;
+  signature_timestamp: string | null;
+  ip_address: string | null;
+  user_agent: string | null;
+  status: 'pending' | 'completed' | 'rejected';
+  submitted_at: string | null;
+  created_at: string;
+  updated_at: string;
 }
 

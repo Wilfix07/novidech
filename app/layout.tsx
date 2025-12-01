@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import ErrorBoundary from "@/components/ErrorBoundary";
+import ClientErrorBoundary from "@/components/ClientErrorBoundary";
 
 export const metadata: Metadata = {
   title: "NOVIDECH MITUELLE LLC",
@@ -15,9 +15,9 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className="antialiased">
-        <ErrorBoundary>
+        <ClientErrorBoundary>
           {children}
-        </ErrorBoundary>
+        </ClientErrorBoundary>
       </body>
     </html>
   );

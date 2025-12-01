@@ -18,11 +18,17 @@ export default function TransactionsPage() {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        const { data: memberData } = await supabase
+        const { data: memberData, error: memberError } = await supabase
           .from('members')
           .select('id')
           .eq('profile_id', user.id)
-          .single();
+          .maybeSingle();
+
+        if (memberError) {
+          console.error('Member error:', memberError);
+          // Member error is logged but we continue - transactions page doesn't have error state
+          return;
+        }
 
         if (memberData) {
           let query = supabase
@@ -100,44 +106,74 @@ export default function TransactionsPage() {
           <div className="bg-white rounded-lg shadow-md p-4">
             <div className="flex flex-wrap gap-2">
               <button
+                onClick={() => setFilter('all')}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  filter === 'all'
+                    ? 'bg-[#d8b3e0] text-white' // Light purple for selected
+                    : 'bg-gray-100 text-text hover:bg-gray-200' // Light gray for others
+                }`}
+              >
+                Tous
+              </button>
+              <button
                 onClick={() => setFilter('contribution')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                className={`px-4 py-2 rounded-lg transition-colors ${
                   filter === 'contribution'
-                    ? 'bg-[#d8b3e0] text-white shadow-sm'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-[#d8b3e0] text-white'
+                    : 'bg-gray-100 text-text hover:bg-gray-200'
                 }`}
               >
                 Contributions
               </button>
               <button
                 onClick={() => setFilter('loan')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                className={`px-4 py-2 rounded-lg transition-colors ${
                   filter === 'loan'
-                    ? 'bg-[#d8b3e0] text-white shadow-sm'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-[#d8b3e0] text-white'
+                    : 'bg-gray-100 text-text hover:bg-gray-200'
                 }`}
               >
                 Prêts
               </button>
               <button
                 onClick={() => setFilter('payment')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                className={`px-4 py-2 rounded-lg transition-colors ${
                   filter === 'payment'
-                    ? 'bg-[#d8b3e0] text-white shadow-sm'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-[#d8b3e0] text-white'
+                    : 'bg-gray-100 text-text hover:bg-gray-200'
                 }`}
               >
                 Paiements
               </button>
               <button
                 onClick={() => setFilter('withdrawal')}
-                className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                className={`px-4 py-2 rounded-lg transition-colors ${
                   filter === 'withdrawal'
-                    ? 'bg-[#d8b3e0] text-white shadow-sm'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-[#d8b3e0] text-white'
+                    : 'bg-gray-100 text-text hover:bg-gray-200'
                 }`}
               >
                 Retraits
+              </button>
+              <button
+                onClick={() => setFilter('expense')}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  filter === 'expense'
+                    ? 'bg-[#d8b3e0] text-white'
+                    : 'bg-gray-100 text-text hover:bg-gray-200'
+                }`}
+              >
+                Dépenses
+              </button>
+              <button
+                onClick={() => setFilter('interest')}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  filter === 'interest'
+                    ? 'bg-[#d8b3e0] text-white'
+                    : 'bg-gray-100 text-text hover:bg-gray-200'
+                }`}
+              >
+                Intérêts
               </button>
             </div>
           </div>

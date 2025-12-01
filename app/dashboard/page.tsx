@@ -31,26 +31,44 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError || !user) {
+          setError('Erreur d\'authentification. Veuillez vous reconnecter.');
+          setLoading(false);
+          return;
+        }
 
-        // Get member record
-        const { data: memberData } = await supabase
+        // Get member record - use maybeSingle() to handle case where member doesn't exist
+        const { data: memberData, error: memberError } = await supabase
           .from('members')
           .select('id, profile_id')
           .eq('profile_id', user.id)
-          .single();
+          .maybeSingle();
+
+        if (memberError) {
+          console.error('Error fetching member:', memberError);
+          setError('Erreur lors du chargement du profil membre.');
+          setLoading(false);
+          return;
+        }
 
         if (memberData) {
           setMember(memberData);
 
           // Get transactions
-          const { data: transactionsData } = await supabase
+          const { data: transactionsData, error: transactionsError } = await supabase
             .from('transactions')
             .select('*')
             .eq('member_id', memberData.id)
             .order('transaction_date', { ascending: false })
             .limit(10);
+
+          if (transactionsError) {
+            console.error('Error fetching transactions:', transactionsError);
+            setError('Erreur lors du chargement des transactions.');
+            setLoading(false);
+            return;
+          }
 
           if (transactionsData) {
             setTransactions(transactionsData as Transaction[]);
