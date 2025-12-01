@@ -31,6 +31,7 @@ export interface Member {
   status: 'active' | 'inactive' | 'suspended';
   form_completed: boolean;
   form_submission_id: string | null;
+  currency: 'USD' | 'HTG';
   created_at: string;
   updated_at: string;
 }
