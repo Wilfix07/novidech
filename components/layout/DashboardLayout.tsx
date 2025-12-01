@@ -106,6 +106,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { href: '/dashboard/admin/user-approvals', label: 'Approbation Utilisateurs', icon: '✅' },
     { href: '/dashboard/admin/password-change-requests', label: 'Demandes Mot de Passe', icon: '🔐' },
     { href: '/dashboard/admin/loan-config', label: 'Configuration des Prêts', icon: '⚙️' },
+    { href: '/dashboard/admin/setup-loan-due-dates', label: 'Échéances des Prêts', icon: '📅' },
     { href: '/dashboard/admin/membership-form', label: 'Formulaire d&apos;Adhésion', icon: '📝' },
     { href: '/dashboard/admin/expense-categories', label: 'Catégories de Dépenses', icon: '🏷️' },
     { href: '/dashboard/admin/interest-distribution', label: 'Partage des Intérêts', icon: '💰' },
