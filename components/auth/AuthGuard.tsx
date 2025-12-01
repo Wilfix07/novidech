@@ -68,7 +68,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
             // Check if member has completed the form
             const { data: member, error: memberError } = await supabase
               .from('members')
-              .select('form_completed, id')
+              .select('form_completed, id, is_default_password')
               .eq('profile_id', user.id)
               .maybeSingle(); // Use maybeSingle() instead of single()
 
@@ -76,6 +76,16 @@ export default function AuthGuard({ children }: AuthGuardProps) {
               console.error('Member error:', memberError);
               setCheckingForm(false);
               return;
+            }
+
+            // Check if member has default password and needs to change it
+            if (member && member.is_default_password) {
+              // Allow access to change password page
+              if (pathname !== '/dashboard/change-password' && pathname !== '/auth/logout') {
+                router.push('/dashboard/change-password');
+                setCheckingForm(false);
+                return;
+              }
             }
 
             // Check if form is active

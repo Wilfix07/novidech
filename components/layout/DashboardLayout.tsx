@@ -89,9 +89,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const navItems = [
     { href: '/dashboard', label: 'Tableau de bord', icon: '📊' },
+    { href: '/dashboard/profile', label: 'Mon Profil', icon: '👤' },
     { href: '/dashboard/transactions', label: 'Transactions', icon: '💳' },
     { href: '/dashboard/loans/overdue', label: 'Prêts en Retard', icon: '⚠️' },
     { href: '/dashboard/loans/schedule', label: 'Échéancier', icon: '📅' },
+    { href: '/dashboard/change-password', label: 'Changer Mot de Passe', icon: '🔐' },
+    { href: '/dashboard/password-change-request', label: 'Demander Changement', icon: '📝' },
   ];
 
   const tellerNavItems = [
@@ -101,6 +104,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const adminNavItems = [
     { href: '/dashboard/admin/members', label: 'Gestion des Membres', icon: '👥' },
     { href: '/dashboard/admin/user-approvals', label: 'Approbation Utilisateurs', icon: '✅' },
+    { href: '/dashboard/admin/password-change-requests', label: 'Demandes Mot de Passe', icon: '🔐' },
     { href: '/dashboard/admin/loan-config', label: 'Configuration des Prêts', icon: '⚙️' },
     { href: '/dashboard/admin/membership-form', label: 'Formulaire d&apos;Adhésion', icon: '📝' },
     { href: '/dashboard/admin/expense-categories', label: 'Catégories de Dépenses', icon: '🏷️' },

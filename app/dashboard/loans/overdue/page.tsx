@@ -25,7 +25,27 @@ export default function OverdueLoansPage() {
         setLoading(true);
         setError(null);
 
-        // Fetch overdue loans with member information
+        // Get current user's member record
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          setError('Utilisateur non connecté');
+          setLoading(false);
+          return;
+        }
+
+        const { data: memberData, error: memberError } = await supabase
+          .from('members')
+          .select('id')
+          .eq('profile_id', user.id)
+          .maybeSingle();
+
+        if (memberError || !memberData) {
+          setError('Erreur lors du chargement du profil membre');
+          setLoading(false);
+          return;
+        }
+
+        // Fetch overdue loans for the current member only
         const { data, error: fetchError } = await supabase
           .from('loans')
           .select(`
@@ -36,6 +56,7 @@ export default function OverdueLoansPage() {
               phone
             )
           `)
+          .eq('member_id', memberData.id)
           .eq('status', 'active')
           .not('due_date', 'is', null)
           .lt('due_date', new Date().toISOString())
@@ -124,9 +145,9 @@ export default function OverdueLoansPage() {
       <DashboardLayout>
         <div className="space-y-6">
           <div>
-            <h1 className="text-3xl font-bold text-text mb-2">Prêts en Retard</h1>
+            <h1 className="text-3xl font-bold text-text mb-2">Mes Prêts en Retard</h1>
             <p className="text-gray-600">
-              Liste de tous les prêts en retard de la mutuelle
+              Liste de vos prêts en retard
             </p>
           </div>
 

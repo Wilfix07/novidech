@@ -32,6 +32,7 @@ export interface Member {
   form_completed: boolean;
   form_submission_id: string | null;
   currency: 'USD' | 'HTG';
+  is_default_password?: boolean;
   created_at: string;
   updated_at: string;
 }
