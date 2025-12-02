@@ -77,24 +77,81 @@ export function normalizeIdentifier(identifier: string): string {
  */
 export async function login(identifier: string, password: string) {
   try {
-    const email = normalizeIdentifier(identifier);
+    const trimmedIdentifier = identifier.trim();
     
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    // Check if it's an email or member ID
+    const isEmailInput = isEmail(trimmedIdentifier);
+    
+    if (isEmailInput) {
+      // Try login with email directly
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: trimmedIdentifier,
+        password,
+      });
 
-    if (error) {
-      // Provide user-friendly error messages
-      if (error.message?.includes('Invalid login credentials') || 
-          error.message?.includes('Invalid password') ||
-          error.message?.includes('User not found')) {
-        throw new Error('Identifiant ou mot de passe incorrect');
+      if (error) {
+        // Provide user-friendly error messages
+        if (error.message?.includes('Invalid login credentials') || 
+            error.message?.includes('Invalid password') ||
+            error.message?.includes('User not found')) {
+          throw new Error('Email ou mot de passe incorrect');
+        }
+        if (error.message?.includes('Email not confirmed')) {
+          throw new Error('Veuillez confirmer votre email avant de vous connecter');
+        }
+        throw error;
       }
-      throw error;
-    }
 
-    return { data, error: null };
+      return { data, error: null };
+    } else {
+      // It's a member ID - convert to technical email
+      const cleanMemberId = trimmedIdentifier.replace(/-/g, '').trim();
+      
+      if (!isMemberId(cleanMemberId)) {
+        throw new Error('Identifiant invalide. Utilisez un email ou un numéro de membre.');
+      }
+
+      const technicalEmail = memberIdToTechnicalEmail(cleanMemberId);
+      
+      // Try login with technical email
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: technicalEmail,
+        password,
+      });
+
+      if (error) {
+        // If technical email doesn't work, try to find user by member_id
+        // This handles legacy users who might not have technical emails yet
+        if (error.message?.includes('Invalid login credentials') || 
+            error.message?.includes('User not found')) {
+          
+          // Try to find member by member_id (with or without hyphens)
+          const cleanId = trimmedIdentifier.replace(/-/g, '');
+          const { data: memberData, error: memberError } = await supabase
+            .from('members')
+            .select('profile_id, member_id')
+            .or(`member_id.eq.${trimmedIdentifier},member_id.eq.${cleanId}`)
+            .maybeSingle();
+
+          if (!memberError && memberData?.profile_id) {
+            // Get the current user to find their email
+            // We need to use a workaround since we can't directly query auth.users
+            // Try to get user info via RPC or check if we can sign in with member_id in metadata
+            
+            // Alternative: Try to find user by checking if member_id matches in user metadata
+            // Since we can't query auth.users directly, we'll need to handle this differently
+            // The best approach is to migrate existing users, but for now we'll provide a clear error
+            throw new Error('Ce numéro de membre nécessite une migration. Veuillez vous connecter avec votre email: ' + 
+              (memberData.profile_id ? 'ou contactez un administrateur' : ''));
+          }
+          
+          throw new Error('Numéro de membre ou mot de passe incorrect');
+        }
+        throw error;
+      }
+
+      return { data, error: null };
+    }
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Une erreur est survenue lors de la connexion';
     return { data: null, error: new Error(errorMessage) };

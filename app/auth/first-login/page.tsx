@@ -330,7 +330,7 @@ function FirstLoginForm() {
         <div className="mt-6 text-center">
           <p className="text-gray-600">
             Déjà un compte?{' '}
-            <Link href="/auth/login" className="text-primary font-semibold hover:underline">
+            <Link href="/login" className="text-primary font-semibold hover:underline">
               Se connecter
             </Link>
           </p>

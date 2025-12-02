@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { login } from '@/lib/auth';
+import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -28,7 +29,19 @@ export default function LoginPage() {
       }
 
       if (data?.user) {
-        router.push('/dashboard');
+        // Check if user is approved before redirecting
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('approved, role')
+          .eq('id', data.user.id)
+          .maybeSingle();
+
+        // If user is not approved and not admin, redirect to waiting page
+        if (profile && profile.role !== 'admin' && !profile.approved) {
+          router.push('/auth/waiting-approval');
+        } else {
+          router.push('/dashboard');
+        }
         router.refresh();
       }
     } catch (err) {

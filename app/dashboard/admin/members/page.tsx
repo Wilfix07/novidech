@@ -176,11 +176,11 @@ export default function AdminMembersPage() {
           is_default_password: true, // Mark as default password
         })
         .select()
-        .single();
+        .maybeSingle();
 
-      if (insertError) {
+      if (insertError || !data) {
         console.error('Insert error:', insertError);
-        throw new Error(insertError.message || 'Erreur lors de la création du membre');
+        throw new Error(insertError?.message || 'Erreur lors de la création du membre');
       }
 
       // Create auth user with default password using technical email system

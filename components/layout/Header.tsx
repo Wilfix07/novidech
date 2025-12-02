@@ -81,7 +81,7 @@ export default function Header() {
               </>
             ) : (
               <Link
-                href="/auth/login"
+                href="/login"
                 className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
               >
                 Connexion
@@ -172,7 +172,7 @@ export default function Header() {
               </>
             ) : (
               <Link
-                href="/auth/login"
+                href="/login"
                 className="block bg-primary text-white px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors text-center"
                 onClick={() => setMenuOpen(false)}
               >

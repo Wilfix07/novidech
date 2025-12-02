@@ -138,11 +138,11 @@ export default function LoanConfigPage() {
           created_by: user.id,
         })
         .select()
-        .single();
+        .maybeSingle();
 
-      if (insertError) {
+      if (insertError || !data) {
         console.error('Insert error:', insertError);
-        throw new Error(insertError.message || 'Erreur lors de la sauvegarde');
+        throw new Error(insertError?.message || 'Erreur lors de la sauvegarde');
       }
 
       setConfig(data);

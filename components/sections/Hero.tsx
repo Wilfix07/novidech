@@ -26,13 +26,13 @@ export default function Hero() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
-              href="/auth/signup"
+              href="/signup"
               className="bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-colors text-center"
             >
               Rejoindre maintenant
             </Link>
             <Link
-              href="/auth/login"
+              href="/login"
               className="bg-white text-banner px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-colors text-center"
             >
               Se connecter

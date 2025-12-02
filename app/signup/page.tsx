@@ -11,6 +11,7 @@ export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [fullName, setFullName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -27,7 +28,7 @@ export default function SignupPage() {
       }
 
       // Use the signUp helper function
-      const { data, error: signUpError } = await signUp(memberId, email, password);
+      const { data, error: signUpError } = await signUp(memberId, email, password, fullName);
 
       if (signUpError) {
         setError(signUpError.message);
@@ -70,6 +71,20 @@ export default function SignupPage() {
         )}
 
         <form onSubmit={handleSignup} className="space-y-6">
+          <div>
+            <label htmlFor="fullName" className="block text-sm font-medium text-text mb-2">
+              Nom complet
+            </label>
+            <input
+              id="fullName"
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+              placeholder="Jean Dupont"
+            />
+          </div>
+
           <div>
             <label htmlFor="memberId" className="block text-sm font-medium text-text mb-2">
               Numéro de membre

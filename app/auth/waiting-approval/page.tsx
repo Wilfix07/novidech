@@ -107,7 +107,7 @@ export default function WaitingApprovalPage() {
             Se déconnecter
           </button>
           <Link
-            href="/auth/login"
+            href="/login"
             className="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-opacity-90 transition-colors text-center"
           >
             Retour à la connexion
